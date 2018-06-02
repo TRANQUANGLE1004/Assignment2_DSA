@@ -16,8 +16,8 @@
 #include <vector>
 
 using namespace std;
-
-
+#define AVL_USE_HEIGHT
+int max2Number(int a, int b) { return a > b ? a : b; }
 class DSAException {
     int     _error;
     string  _text;
@@ -245,6 +245,8 @@ public:
     void traverseLRN(void (*op)(T&)) { traverseLRN(_pRoot, op); }
 
 protected:
+	int getHeight(AVLNode<T>* pR);
+	int getBalance(AVLNode<T>* pR);
     void destroy(AVLNode<T>* &pR);
     bool find(AVLNode<T> *pR, T& key, T* &ret);
     bool insert(AVLNode<T>* &pR, T& a);
@@ -258,9 +260,108 @@ protected:
     void rotLR(AVLNode<T>* &pR);
     void rotRL(AVLNode<T>* &pR);
 
-    bool balanceLeft(AVLNode<T>* &pR);
-    bool balanceRight(AVLNode<T>* &pR);
+    bool balanceLeft(AVLNode<T>* &pR);// left.height > right.height
+    bool balanceRight(AVLNode<T>* &pR);// right.height > left.height
 };
 
 
 #endif //A02_DSALIB_H
+
+template<class T>
+int AVLTree<T>::getHeight(AVLNode<T>* pR) {
+	if (pR == NULL) return 0;
+	return pR->_height;
+}
+
+template<class T>
+int AVLTree<T>::getBalance(AVLNode<T>* pR) {
+	return getHeight(pR->_pLeft) - getHeight(pR->_pRight);
+}
+
+template<class T>
+bool AVLTree<T>::insert(AVLNode<T>*& pR, T & a) {
+	if (pR == NULL) { 
+		pR = new AVLNode<T>(a);
+		return true;
+	}
+	if (a < pR._data) return insert(pR->_pLeft, a);
+	else return insert(pR->_bFactor, a);
+	//
+	pR->_height = 1 + max2Number(getHeight(pR->_pLeft), getHeight(pR->_pRight));
+	//
+	if (balanceLeft(pR) && a < pR._data) { return rotRight(pR); }
+	if(balanceLeft(pR) && )
+}
+
+template<class T>
+void AVLTree<T>::traverseNLR(AVLNode<T>* pR, void(*op)(T &)) {
+	if (pR == NULL) return;
+	op(pR->_data);
+	traverseNLR(pR->_pLeft, op);
+	traverseNLR(pR->_pRight, op);
+}
+
+template<class T>
+void AVLTree<T>::traverseLNR(AVLNode<T>* pR, void(*op)(T &)) {
+	if (pR == NULL) return;
+	traverseLNR(pR->_pLeft, op);
+	op(pR->_data);
+	traverseLNR(pR->_pRight, op);
+}
+
+template<class T>
+void AVLTree<T>::traverseLRN(AVLNode<T>* pR, void(*op)(T &)) {
+	if (pR == NULL) return;
+	traverseLNR(pR->_pLeft, op);
+	traverseLNR(pR->_pRight, op);
+	op(pR->_data);
+}
+
+template<class T>
+void AVLTree<T>::rotLeft(AVLNode<T>*& pR) {
+	AVLNode<T>* temp = pR->_pLeft;
+	pR->_pRight = temp->_pLeft;
+	temp->_pLeft = pR;
+	pR->_height -= 2;
+	pR = temp;
+}
+
+template<class T>
+void AVLTree<T>::rotRight(AVLNode<T>*& pR) {
+	AVLNode<T>* temp = pR->_pLeft;
+	pR->_pLeft = temp->_pRight;
+	temp->_pRight = pR;
+	pR->_height -= 2;
+	pR = temp;
+}
+
+template<class T>
+void AVLTree<T>::rotLR(AVLNode<T>*& pR) {
+	AVLNode<T>* temp = pR->_pRight;
+	pR->_pRight = temp->_pLeft;
+	pR->_height--;
+	temp->_pLeft = pR;
+	pR = temp;
+	pR->_height++;
+
+}
+
+template<class T>
+void AVLTree<T>::rotRL(AVLNode<T>*& pR) {
+	AVLNode<T>* temp = pR->_pLeft;
+	pR->_pLeft = temp->_pRight;
+	pR->_height--;
+	temp->_pRight = pR;
+	pR = temp;
+	pR->_height++;
+}
+
+template<class T>
+bool AVLTree<T>::balanceLeft(AVLNode<T>*& pR) {
+	/*if (getBalance(pR) > 1) return true;
+	return false;*/
+	return getBalance(pR) > 1 ? true : false;
+}
+
+template<class T>
+bool AVLTree<T>::balanceRight(AVLNode<T>*& pR) { return getBalance(pR) < -1 ? true : false; }
