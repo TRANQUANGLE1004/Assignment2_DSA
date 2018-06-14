@@ -27,6 +27,9 @@
     <ClCompile Include="requestLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dsaLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dbLib.h">
@@ -38,5 +41,12 @@
     <ClInclude Include="requestLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="request.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sampleData.dat" />
+    <None Include="README.md" />
   </ItemGroup>
 </Project>
